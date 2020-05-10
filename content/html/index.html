@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<head>
+
+</head>
+<body>
+    <video autoplay muted id="myVideo">
+        <source src="" type="video/mp4">
+    </video>
+    <audio controls id="myAudio">
+        <source src="" type="audio/mp3">
+      </audio>
+</body>
+
+<style>
+    /* Style the video: 100% width and height to cover the entire window */
+#myVideo {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+}
+
+#myAudio {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    opacity: 0;
+    transition: 0.3s;
+}
+
+html:hover #myAudio {
+    opacity: 1.0;
+}
+</style>
+
+<script>
+    // This will wait for the astilectron namespace to be ready
+    document.addEventListener('astilectron-ready', function() {
+        var myvid = document.getElementById('myVideo');
+        var myAudio = document.getElementById('myAudio');
+
+        // This will send a message to GO
+        astilectron.sendMessage("getNextVideo", function(newSource) {
+            myvid.src = newSource;
+            myvid.play();
+        });
+
+        myvid.addEventListener('ended', function(e) {
+            astilectron.sendMessage("getNextVideo", function(newSource) {
+                myvid.src = newSource;
+                myvid.play();
+            });
+        });
+
+        astilectron.sendMessage("getNextAudio", function(newSource) {
+            myAudio.src = newSource;
+            myAudio.play();
+        });
+
+        myAudio.addEventListener('ended', function(e) {
+            astilectron.sendMessage("getNextAudio", function(newSource) {
+                myAudio.src = newSource;
+                myAudio.play();
+            });
+        });
+
+    })
+    
+</script>
