@@ -17,10 +17,16 @@ func main() {
 	// Set logger
 	l := log.New(log.Writer(), log.Prefix(), log.Flags())
 
+	path, err := os.Getwd()
+
+	if err != nil {
+		path = "."
+	}
+
 	// Create astilectron
 	a, err := astilectron.New(l, astilectron.Options{
-		AppName:           "Test",
-		BaseDirectoryPath: "example",
+		AppName:            "Dream Tube",
+		AppIconDefaultPath: path + "/content/icons/icon.png",
 	})
 	if err != nil {
 		l.Fatal(fmt.Errorf("main: creating astilectron failed: %w", err))
@@ -37,7 +43,7 @@ func main() {
 
 	// New window
 	var w *astilectron.Window
-	if w, err = a.NewWindow("../content/html/index.html", &astilectron.WindowOptions{
+	if w, err = a.NewWindow("./content/html/index.html", &astilectron.WindowOptions{
 		Center: astikit.BoolPtr(true),
 		Height: astikit.IntPtr(700),
 		Width:  astikit.IntPtr(700),
@@ -60,7 +66,7 @@ func main() {
 
 		// Process next video
 		if s == "getNextVideo" {
-			files := getFiles("../content/mp4")
+			files := getFiles("./content/mp4")
 
 			if len(files) == 0 {
 				return nil
@@ -77,7 +83,7 @@ func main() {
 
 		// Process next video
 		if s == "getNextAudio" {
-			files := getFiles("../content/mp3")
+			files := getFiles("./content/mp3")
 
 			if len(files) == 0 {
 				return nil
@@ -93,7 +99,7 @@ func main() {
 		}
 		return nil
 	})
-
+	w.OpenDevTools()
 	// Blocking pattern
 	a.Wait()
 
@@ -108,7 +114,7 @@ func getFiles(root string) []string {
 	}
 
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
-		files = append(files, strings.Replace(path, "content\\", "", -1))
+		files = append(files, strings.Replace(path, "content\\", "..\\", -1))
 		return nil
 	})
 	if err != nil {

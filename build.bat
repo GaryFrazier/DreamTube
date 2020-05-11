@@ -1,0 +1,1 @@
+go build -o ./DreamTube.exe main.go
